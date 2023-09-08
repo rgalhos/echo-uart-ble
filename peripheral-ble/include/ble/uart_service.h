@@ -1,10 +1,15 @@
 #ifndef BLE_UART_SERVICE_H
 #define BLE_UART_SERVICE_H
 
+#include <stdint.h>
+#include <string.h>
 #include <bluetooth/gatt.h>
 
 #include <ble/application.h>
 #include <utils.h>
+
+// defines:
+#define MAX_DATA_LEN 256
 
 // methods:
 // bt_gatt_attr_write_func_t

@@ -2,7 +2,7 @@
 #include <kernel.h>
 
 #include <ble/application.h>
-// #include <ble/uart_service.h>
+#include <ble/uart_service.h>
 #include <utils.h>
 
 int main()
@@ -21,13 +21,7 @@ int main()
         return err;
     }
 
-    // initialize_uart_service(&state);
-
-    while (1)
-    {
-        k_sleep(K_SECONDS(1));
-        LOG_DEBUG("iteration");
-    }
+    initialize_uart_service(&state);
 
     LOG_TRACE("fin");
 

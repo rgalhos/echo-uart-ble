@@ -17,14 +17,6 @@ Projeto da disciplina de Sistemas Embarcados 2023.1 - ECOM042-T: echo UART pelo 
 >
 > - Testar a implementação no Renode
 
-### Referências
-
-- Documentação do Zephyr
-- Exemplos encontrados no repositório do Zephyr
-  - central_gatt_write: https://github.com/zephyrproject-rtos/zephyr/tree/main/samples/bluetooth/central_gatt_write
-  - central: https://github.com/zephyrproject-rtos/zephyr/tree/main/samples/bluetooth/central
-  - peripheral: https://github.com/zephyrproject-rtos/zephyr/tree/main/samples/bluetooth/peripheral
-- Rede BLE no renode com dois dispositivos: https://github.com/renode/renode/blob/master/scripts/multi-node/nrf52840-ble-zephyr.resc
 
 ### Como rodar
 
@@ -33,3 +25,14 @@ Projeto da disciplina de Sistemas Embarcados 2023.1 - ECOM042-T: echo UART pelo 
 `./peripheral-ble/run_peripheral.sh` Para rodar o periférico
 
 `./central-ble/run_central.sh` Para rodar a central
+
+
+### Referências
+
+- Documentação do Zephyr
+- Exemplos encontrados no repositório do Zephyr
+  - central: https://github.com/zephyrproject-rtos/zephyr/tree/main/samples/bluetooth/central
+  - peripheral: https://github.com/zephyrproject-rtos/zephyr/tree/main/samples/bluetooth/peripheral
+  - central_gatt_write: https://github.com/zephyrproject-rtos/zephyr/tree/main/samples/bluetooth/central_gatt_write
+  - peripheral_gatt_write: https://github.com/zephyrproject-rtos/zephyr/tree/main/samples/bluetooth/peripheral_gatt_write
+- Rede BLE no renode com dois dispositivos: https://github.com/renode/renode/blob/master/scripts/multi-node/nrf52840-ble-zephyr.resc
