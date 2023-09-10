@@ -1,6 +1,5 @@
 #include <ble/application.h>
 
-static int ble_evt_on_ready();
 static void ble_evt_on_device_found(const bt_addr_le_t *addr, int8_t rssi,
                                     uint8_t adv_type, struct net_buf_simple *buf);
 static void ble_evt_on_connect(struct bt_conn *conn, uint8_t err);
@@ -53,8 +52,7 @@ static void ble_evt_on_device_found(const bt_addr_le_t *addr, int8_t rssi,
         LOG_DEBUG("Parando de escanear");
     }
 
-    struct bt_conn *new_conn;
-    int err = bt_conn_le_create(addr, BT_CONN_LE_CREATE_CONN, BT_LE_CONN_PARAM_DEFAULT, &new_conn);
+    int err = bt_conn_le_create(addr, BT_CONN_LE_CREATE_CONN, BT_LE_CONN_PARAM_DEFAULT, &g_state->conn_ref);
     if (0 != err)
     {
         LOG_ERROR("Falha ao se conectar com %s. Erro: %d", addr_str, err);
@@ -62,23 +60,8 @@ static void ble_evt_on_device_found(const bt_addr_le_t *addr, int8_t rssi,
         ble_start_scan();
     }
 
-    g_state->conn_ref = new_conn;
-
     return;
 } // ble_evt_on_device_found
-
-static int ble_evt_on_ready(central_state_t *state)
-{
-    LOG_TRACE("ble_evt_on_ready");
-    LOG_INFO("Bluetooth inicializado");
-
-    assert(NULL != state);
-
-    g_state = state;
-    LOG_DEBUG("Estado setado");
-
-    return ble_start_scan();
-} // ble_evt_on_ready
 
 static void ble_evt_on_connect(struct bt_conn *conn, uint8_t err)
 {
@@ -101,18 +84,12 @@ static void ble_evt_on_connect(struct bt_conn *conn, uint8_t err)
     }
 
     if (conn != g_state->conn_ref)
-    {
         return;
-    }
-
-    // g_state->conn_ref = bt_conn_ref(conn);
 
     LOG_INFO("Conectado ao periférico %s", addr_str);
 
     if (NULL != g_state->on_connection_success)
-    {
         g_state->on_connection_success(g_state);
-    }
 } // ble_evt_on_connect
 
 static void ble_evt_on_disconnect(struct bt_conn *conn, uint8_t reason)
@@ -157,12 +134,16 @@ int start_ble_central(central_state_t *state)
 {
     LOG_TRACE("start_ble_central");
 
+    assert(NULL != state);
+
     int err = bt_enable(NULL);
 
     if (0 != err)
         return err;
 
-    ble_evt_on_ready(state);
+    g_state = state;
 
-    return 0;
+    LOG_INFO("Bluetooth inicializado");
+
+    return ble_start_scan();
 } // start_ble_central

@@ -1,11 +1,13 @@
 #include <ble/uart_service.h>
 
+// methods:
 static int on_receive_data_callback(const uint8_t *data, const int len);
 static void ccc_evt_on_change(const struct bt_gatt_attr *attr, uint16_t value);
 
-static struct bt_uuid_32 uuid_uart_to_uppercase = BT_UUID_INIT_32(0xABCDEF01);
-static struct bt_uuid_32 uuid_uart_receive_data = BT_UUID_INIT_32(0xABCDEF02);
-static struct bt_uuid_32 uuid_uart_send_data = BT_UUID_INIT_32(0xABCDEF03);
+// structs:
+static struct bt_uuid_16 uuid_uart_to_uppercase = BT_UUID_INIT_16(0xAB01);
+static struct bt_uuid_16 uuid_uart_receive_data = BT_UUID_INIT_16(0xAB02);
+static struct bt_uuid_16 uuid_uart_send_data = BT_UUID_INIT_16(0xAB03);
 
 static struct bt_gatt_attr uart_gatt_attrs[] = {
     BT_GATT_PRIMARY_SERVICE(&uuid_uart_to_uppercase),
@@ -28,18 +30,21 @@ static struct bt_gatt_attr uart_gatt_attrs[] = {
 
 static struct bt_gatt_service uart_to_uppercase_service = BT_GATT_SERVICE(uart_gatt_attrs);
 
+// globals:
 static peripheral_state_t *g_state;
 
 // ------------------------------------------------------------
 
 static int on_receive_data_callback(const uint8_t *data, const int len)
 {
+    LOG_TRACE("on_receive_data_callback");
+
     assert(NULL != g_state->conn_ref);
 
     if (!data || !len)
         return -1;
 
-    uint8_t buffer[MAX_DATA_LEN];
+    uint8_t buffer[MAX_BLE_MSG_SIZE];
     memcpy(buffer, data, len);
 
     for (int i = 0; i < len; i++)
@@ -65,16 +70,20 @@ static int on_receive_data_callback(const uint8_t *data, const int len)
 static void ccc_evt_on_change(const struct bt_gatt_attr *attr, uint16_t value)
 {
     LOG_TRACE("ccc_evt_on_change");
-    LOG_DEBUG("%x -> %u", attr->uuid, value);
+    LOG_DEBUG("attr->uuid: [ %x ] value: [ %u ]", attr->uuid, value);
 } // ccc_evt_on_change
 
-ssize_t ble_evt_on_receive_data(struct bt_conn *conn, const struct bt_gatt_attr *attr,
-                                const void *buf, uint16_t len, uint16_t offset, uint8_t flags)
+ssize_t ble_evt_on_receive_data(struct bt_conn *conn,
+                                const struct bt_gatt_attr *attr,
+                                const void *buf,
+                                uint16_t len,
+                                uint16_t offset,
+                                uint8_t flags)
 {
     LOG_TRACE("ble_evt_on_receive_data");
 
-    int datalen = len >= MAX_DATA_LEN ? (MAX_DATA_LEN - 1) : len;
-    uint8_t data[MAX_DATA_LEN];
+    int datalen = len >= MAX_BLE_MSG_SIZE ? (MAX_BLE_MSG_SIZE - 1) : len;
+    uint8_t data[MAX_BLE_MSG_SIZE];
 
     memcpy(data, buf, datalen);
     data[datalen] = '\0';
